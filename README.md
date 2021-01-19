@@ -1,4 +1,4 @@
-# Udacity / Bertelsmann Tech Scholarship Cloud Track Data API
+# Udacity / Bertelsmann Data API
 
 Data provider for scholars enrolled in [Udacity/Bertelsmann Tech Scholarship Cloud Track](https://www.udacity.com/bertelsmann-tech-scholarships) challenge course&mdash;ingest it and build something cool.
 
