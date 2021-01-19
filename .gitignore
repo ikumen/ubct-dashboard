@@ -127,3 +127,17 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+/node_modules/
+package-lock.json
+yarn.lock
+.DS_Store
+
+frontend/public/static/bundle.*
+sqlite.db
+
+/flask_session/
+.data
+
+# For local configurations not meant to be checked in
+local.cfg
