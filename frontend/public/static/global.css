@@ -1,0 +1,28 @@
+html, body {
+	height: 100%;
+	font-size: 18px;
+}
+
+a:link { color: #1a0dab; }
+a:visited { color: #551A8B; }
+a:hover {
+	text-decoration: underline;
+}
+
+.btn, .btn:link, .btn:hover, .btn:visited {
+	text-decoration: none;
+	color: #fff;
+}
+
+.w-95 {width: 95%;}
+.w-05 {width: 5%;}
+.md-lg {
+	font-size: 2rem;
+}
+.md-med {
+	font-size: 1.2rem;
+}
+.md-sm {
+	font-size: 1rem;
+}
+
