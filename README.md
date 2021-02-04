@@ -1,6 +1,6 @@
 # Udacity Bertelsmann TS Cloud Track Data API
 
-Data provider for scholars enrolled in [Udacity Bertelsmann Tech Scholarship Cloud Track](https://www.udacity.com/bertelsmann-tech-scholarships) challenge course&mdash;consume it and build something cool.
+Data provider for scholars enrolled in [Udacity Bertelsmann Tech Scholarship Cloud Track](https://www.udacity.com/bertelsmann-tech-scholarships) challenge course, consume it and build something cool.
 
 * [Overview](#overview)
 * [Data API](#data-api)
@@ -14,25 +14,25 @@ Data provider for scholars enrolled in [Udacity Bertelsmann Tech Scholarship Clo
 What does it do? In simple terms: takes in data generated from the Udacity Bertelsmann TS Cloud Track community of scholars, loads it into a SQL Database then provides the data via API for apps developed by our community of aspiring scholars to consume. The goal is to showcase how various Azure services can be utilized to implement the following architecture.
 
 ```                
-                    |         Azure Cloud
-                    |    +--------------+
-                    | +->| Blob Storage |<-------------+
-+--------------+    | |  +------|-------+              |
-|  User Data   |    | |  +------v-------+     +--------V--------+
-| from various |----^-+->| Azure Event  |---->| Azure Functions |  
-|   sources    |    |    |    Grid      |     +--------+--------+
-+--------------+    |    +--------------+              |     
-                    |                                  |
-                    |   +---------------+    +---------v----------+
-+-----------+       |   | UBTS Data API |    | Azure SQL Database |
-| +---------+-+     |   | (App Service) |    +---------+----------+
-| |  Awesome  |     |   |               |<-------------+
-| |   Apps    |<----^---| /students     |
-+-|           |     |   | /messages     |    +--------------------+
-  +-----------+     |   +-------+-------+    | Microsoft Identity |
-        ^-----------^-----------^------------|      Platform      |
-                    |                        +--------------------+
-                    |
+                       |             Azure Cloud
+                       |      +----------------+
+                       | +--->|  Blob Storage  |<--------------+
++----------------+     | |    +-------|--------+               |
+|   User Data    |     | |    +-------v--------+      +--------V--------+
+|  from various  |-----^-+--->|  Azure Event   |----->| Azure Functions |  
+|    sources     |     |      |     Grid       |      +--------+--------+
++----------------+     |      +----------------+               |     
+                       |                                       |
+                       |      +----------------+     +---------v----------+
++------------+         |      | UBTS Data API  |     | Azure SQL Database |
+| +----------+-+       |      | (App Service)  |     +---------+----------+
+| |  Awesome   |       |      |                |<--------------+
+| |   Apps     |<------^------| /students      |
++-|            |       |      | /messages      |     +--------------------+
+  +------------+       |      +--------+-------+     | Microsoft Identity |
+        ^--------------^---------------^-------------|      Platform      |
+                       |                             +--------------------+
+                       |
 ```
 
 ### Core Components
@@ -49,7 +49,8 @@ The functional scope of the project covers the components listed under the Azure
 
 The UBTS Cloud Track Data API application consists of two app modules: 1) a dashboard for users to register their applications and acquire an API key and 2) the API server.
 
-[[TODO]] screen shots
+<img src="docs/ubtsct-login.png" width="200"/> <img src="docs/ubtsct-verify.png" width="200"/> <img src="docs/ubtsct-dashboard.png" width="200"/> <img src="docs/ubtsct-dashboard2.png" width="200"/>
+
 
 ## Data API
 
@@ -81,24 +82,57 @@ If you look at our sequence diagram below, you'll notice steps 1-8 are like any 
 
 Once the user has access to the API, they can register an application and receive an API key that must be sent along with every request to the API.
 
+### Endpoint Authentication
+
+All requests to `/api/resource/*` endpoints require an "Authorization" header with the API key obtained during application registration (above) as the value.
+
+```
+Authentication: <your API key>
+```
+
 ### Data and API Endpoints
 
 The API offers the following data sets and their respective endpoints.
 
 #### Slack Users
 
-Slack users belonging to the cloud track (updated daily to Blob storage)
+| Endpoint | `/api/resource/slack/users` |
+| :-- | :-- |
+| __Method__ | GET |
+| __Description__ | List of Slack users |
+| __Parameters__ | <ul><li>`page` _number_ optional, defaults to 1</li><li>`per_page` _number_ optional, defaults to 10, valid range10 <= n <= 100</li><li> `tz_offset` _string_ optional, filter user by time zone offset from GMT, example format UTC+03:00</li></ul>  |
 
-| Endpoint | Method | Parameters |
-| ---- | ---- | --- |
-| `/api/resource/slack/users` | `GET` | `page` _number_ defaults to 1
-| | | `per_page` _number_ defaults to 10, valid range10 <= n <= 100
-| | | `tz_offset` _string_ example format UTC+03:00
+Example request and response to `/api/resource/slack/users`
 
+* Request
+  ```bash
+  http <ubtsct-uri>/api/resource/slack/users Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg tz_offset==UTC+03:00 per_page==10
+  ```
+* Response
+  ```bash
+  {
+  "items":[
+    {"id":"U0001UBTSCT","name":"Arthur","avatarId":"abcdef123451","fullName":"Terry Gilliam","title":"","offset":"UTC+03:00"},
+    {"id":"U0002UBTSCT","name":"Badger","avatarId":"abcdef123452","fullName":"Eric Idle","title":"","offset":"UTC+03:00"},
+    ...
+   ],
+   "page": 1,
+   "per_page": 10,
+   "total": 87
+  }
+  ```
 
-- Slack channels belonging to the cloud track (daily to Blob storage)
-- Slack messages for each channel in the cloud track (throughout day to Event Grid)
+#### Slack Channels
 
+Slack channels belonging to the cloud track (updated daily to Blob storage)
+
+[[TODO]]
+
+#### Slack Messages
+
+Slack messages for each channel in the cloud track (throughout day to Event Grid)
+
+[[TODO]]
 
 
 ## Quick Start
@@ -116,7 +150,7 @@ You should have the following installed:
 
 ### Configurations
 
-Configuration is modeled after [12-factor](https://12factor.net/) practices, where all config that is not static is read from environment variables. In production, configuration is provided 
+Configuration is modeled after [12-factor](https://12factor.net/) practices, all configurations are either declared directly in [settings.py](/backend/settings.py) or read from environment variables. On Azure, we'll use [App Service configurations](https://docs.microsoft.com/en-us/azure/app-service/configure-common). Locally we use [python-dotenv](https://github.com/theskumar/python-dotenv) to load a local `.env` file containing all the local configurations, including secrets. This local configuration file should not be checked into source control, so an [entry to have it ignored already exists in `.gitignore`](/.gitignore#L105)
 
 #### Setting Up OAuth Providers
 
