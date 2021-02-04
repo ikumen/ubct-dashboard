@@ -23,7 +23,7 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newApp)
       }).then(resp => {
-        if (resp.status !== 200) {
+        if (resp.status !== 201) {
           Errors.push("Oh noes, we were unable to register your app, please try again later.")
         } else {
           return resp;
@@ -42,6 +42,13 @@
 
   async function deleteApp(app) {
     fetch(`/api/user/apps/${app.id}`, {method: 'delete'})
+      .then(resp => {
+        if (resp.status !== 200) {
+          Errors.push(`Oh noes, we were unable to delete app: ${app.name}`)
+        } else {
+          return resp;
+        }
+      })
       .then(resp => resp.json())
       .then(UserApps.remove);
   }
