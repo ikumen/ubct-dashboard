@@ -5,13 +5,14 @@ Data provider for scholars enrolled in [Udacity Bertelsmann Tech Scholarship Clo
 * [Overview](#overview)
 * [Data API](#data-api)
   - [Security](#security)
-  - [Data and API Endpoints](#data-and-api-endpoints)
-* [Quick start](#quick-start)
+  - [API Endpoints](#api-endpoints)
+* [Production](#production)
+* [Development](#development)
 
 
 ## Overview
 
-What does it do? In simple terms: takes in data generated from the Udacity Bertelsmann TS Cloud Track community of scholars, loads it into a SQL Database then provides the data via API for apps developed by our community of aspiring scholars to consume. The goal is to showcase how various Azure services can be utilized to implement the following architecture.
+What does it do? In simple terms: takes data from the Udacity Bertelsmann TS Cloud Track community of scholars and loads it into SQL Database, and provides the data via an API for our community of scholars to consume. The goal is to showcase how various Azure services can be utilized to implement the following architecture.
 
 ```                
                        |             Azure Cloud
@@ -47,7 +48,9 @@ The functional scope of the project covers the components listed under the Azure
 
 #### UBTS Cloud Track Data API
 
-The UBTS Cloud Track Data API application consists of two app modules: 1) a dashboard for users to register their applications and acquire an API key and 2) the API server.
+The UBTS Cloud Track Data API is a Flask app with two modules, the API server and a SPA user dashboard for managing applications and API keys.
+
+##### SPA User Dashboard
 
 <img src="docs/ubtsct-login.png" width="200"/> <img src="docs/ubtsct-verify.png" width="200"/> <img src="docs/ubtsct-dashboard.png" width="200"/> <img src="docs/ubtsct-dashboard2.png" width="200"/>
 
@@ -82,7 +85,7 @@ If you look at our sequence diagram below, you'll notice steps 1-8 are like any 
 
 Once the user has access to the API, they can register an application and receive an API key that must be sent along with every request to the API.
 
-### Endpoint Authentication
+#### Endpoint Authentication
 
 All requests to `/api/resource/*` endpoints require an "Authorization" header with the API key obtained during application registration (above) as the value.
 
@@ -90,37 +93,59 @@ All requests to `/api/resource/*` endpoints require an "Authorization" header wi
 Authentication: <your API key>
 ```
 
-### Data and API Endpoints
+### API Endpoints
 
-The API offers the following data sets and their respective endpoints.
+The API offers the following data sets and their respective endpoints. Requests that return lists of items will be paginated. You can customize how the results are paged back with the following parameters.
 
-#### Slack Users
+| Parameter | Type | In | Description |
+| :-- | :-- | :-- | :-- |
+| `page` | integer | query | (optional) the page to return, defaults to 1, invalid page will return 404 |
+| `per_page` | integer | query | (optional) the page size, defaults to 100, valid range 10 <= size <= 100 |
 
-| Endpoint | `/api/resource/slack/users` |
-| :-- | :-- |
-| __Method__ | GET |
-| __Description__ | List of Slack users |
-| __Parameters__ | <ul><li>`page` _number_ optional, defaults to 1</li><li>`per_page` _number_ optional, defaults to 10, valid range10 <= n <= 100</li><li> `tz_offset` _string_ optional, filter user by time zone offset from GMT, example format UTC+03:00</li></ul>  |
+A typical paginated response looks like this, `items` will contain the resource items being returned.
+```json
+{
+  "items": [{...}, ],
+  "page": 1,
+  "per_page": 100,
+  "total": 2000
+}
+```
 
-Example request and response to `/api/resource/slack/users`
+#### List Slack Users
 
-* Request
+List all Slack users, sorted by name.
+
+```
+[GET] /api/resource/slack/users
+```
+##### Parameters
+| Name | Type | In | Description |
+| :-- | :-- | :-- | :-- |
+| `tz_offset` | string | query | (optional) only show users with given time zone offset from GMT. Format expected: `UTC+03:00` |
+
+##### Example Request
+
+* [httpie](https://httpie.io/)
   ```bash
   http <ubtsct-uri>/api/resource/slack/users Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg tz_offset==UTC+03:00 per_page==10
   ```
-* Response
-  ```bash
-  {
-  "items":[
-    {"id":"U0001UBTSCT","name":"Arthur","avatarId":"abcdef123451","fullName":"Terry Gilliam","title":"","offset":"UTC+03:00"},
-    {"id":"U0002UBTSCT","name":"Badger","avatarId":"abcdef123452","fullName":"Eric Idle","title":"","offset":"UTC+03:00"},
-    ...
-   ],
-   "page": 1,
-   "per_page": 10,
-   "total": 87
-  }
-  ```
+##### Example Response
+```
+Status: 200 OK
+```
+```bash
+{
+ "items":[
+   {"id":"U0001UBTSCT","name":"Arthur","avatarId":"abcdef123451","fullName":"Terry Gilliam","title":"","offset":"UTC+03:00"},
+   {"id":"U0002UBTSCT","name":"Badger","avatarId":"abcdef123452","fullName":"Eric Idle","title":"","offset":"UTC+03:00"},
+  ...
+  ],
+  "page": 1,
+  "per_page": 10,
+  "total": 87
+}
+```
 
 #### Slack Channels
 
@@ -134,10 +159,13 @@ Slack messages for each channel in the cloud track (throughout day to Event Grid
 
 [[TODO]]
 
+## Production
 
-## Quick Start
+[[TODO]]
 
-If you're looking to extend/customize/contribute or simply demo this project, here's a quick start. 
+## Development
+
+If you would like to contribute, fork or simply demo this project, here's some info to get you started for local development.
 
 You should have the following installed:
 
@@ -148,26 +176,119 @@ You should have the following installed:
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - and an IDE would be helpful ([Visual Studio Code is nice](https://code.visualstudio.com/)).
 
-### Configurations
+### Project Structure
 
-Configuration is modeled after [12-factor](https://12factor.net/) practices, all configurations are either declared directly in [settings.py](/backend/settings.py) or read from environment variables. On Azure, we'll use [App Service configurations](https://docs.microsoft.com/en-us/azure/app-service/configure-common). Locally we use [python-dotenv](https://github.com/theskumar/python-dotenv) to load a local `.env` file containing all the local configurations, including secrets. This local configuration file should not be checked into source control, so an [entry to have it ignored already exists in `.gitignore`](/.gitignore#L105)
+Monorepo with everything needed to run this project.
+
+``` bash
+/alembic    # Schema management  
+/backend    # Flask app supporting blueprints for API and SPA dashboard
+/docs       
+/frontend   # SPA user interface  
+/ingester   # Azure Functions for handling data loading
+/tests
+application.py        # Entry point into the backend app
+docker-compose.yml    # Containers for Azurite and SQL Database 
+Dockerfile.sqlserver  # Cstom SQL Server dockerfile to create init scripts
+manage.py             # Entry point for alembic schema manager               
+```
+
+### Configuration
+
+Configuration is modeled after [12-factor](https://12factor.net/) practices, all configurations are either declared directly in [settings.py](/backend/settings.py) or read from environment variables. On Azure, we'll use [App Service configurations](https://docs.microsoft.com/en-us/azure/app-service/configure-common) to provide the environment variables. Locally, during development we use [python-dotenv](https://github.com/theskumar/python-dotenv) to load a local `.env` file containing all the local configurations, including secrets. This local configuration file should not be checked into source control, so an [entry to have it ignored already exists in `.gitignore`](/.gitignore#L105)
+
+To start, an [example `.env`](/.example-env) has been created at the base of this repo, just rename it to `.env` to use.
 
 #### Setting Up OAuth Providers
 
-Microsoft/Azure 
+The following steps are required for setting up OAuth.
 
-1. Azure Active directory -> App registrations (left hand pane) 
-1. New registration
-  - Name: (e.g, myapp-api, myapp-api-development)
-  - Account Types: choose in any organization (multitenant)
-  - Redirect: http://localhost:5000/oauth/azure/success
-1. Upon completion, go to resouce -> Certificates & secrets (left hand pane)
-  - New client secret (take note of client secret and key)
+##### Microsoft/Azure 
 
-GitHub
+1. sign into the [Azure Portal](https://portal.azure.com), find `Azure Active Directory`
+1. from `Azure Active directory` left menu, select `App registrations`
+1. from `New registration` page, enter
+   - `Name`: (e.g, myapp-api, myapp-api-development)
+   - `Account Types`: choose in any organization (multitenant)
+   - `Redirect`: http://localhost:5000/signin/azure/complete
+1. Upon completion, select `go to resource`
+1. from resource page left menu, select `Certificates & secrets`
+   - click `+ New client secret` (take note of client secret and key)
+
+##### GitHub
+
+1. sign in [GitHub](https://github.com) and goto [Developer Settings](https://github.com/settings/apps) page
+1. from left menu, select `OAuth Apps`
+1. from `OAuth Apps` page, select top right `New OAuth App` button
+1. on the `Register a new OAuth application` page, enter
+   - `Application name`
+   - `Homepage URL`
+   - `Authorization callback URL`: http://localhost:5000/signin/github/complete
+1. on new OAuth application page, 
+   - click `Generate a new client secret` button
+   - take note of `Client ID` and `Client secrets`
+
+After obtaining the client key/id and secrets for `Azure` and `GitHub`, add them to the example `.env` you've renamed from earlier.
+
+### Build and Run
+
+There are basically 4 different components to build/run: 
+
+  * containers for Blob storage and SQL Database
+  * frontend SPA
+  * backend app (includes both API and SPA dashboard)
+  * functions
+
+You'll always need to run the local containers for Blob storage and SQL DB.
+```bash
+# terminal 1
+cd <project-root>
+docker-compose up
+```
+
+The frontend SPA can be built explicitly and run from the backend server or run in a separate development server (via webpack) if you are working on the frontend.
+
+In both cases, you'll need to install the dependencies first.
+
+```bash
+# terminal 2
+cd <project-root>
+npm install --prefix frontend     # install dependencies
+```
+
+Then if you just need to build it and have it automatically picked up by the backend app.
+
+```bash
+# still terminal 2
+npm run build --prefix frontend   # compile the SPA
+# ^ will create frontend/public/static/bundle.css, frontend/public/static/bundle.js 
+```
+... or if you plan on developing the frontend and want hot-reloading, you'll need to run it in it's own server (via webpack).
+
+```bash
+# still terminal 2
+npm run dev --prefix frontend   # start server at localhost:8080 for the SPA at, calls backend will be proxied to localhost:5000
+```
+Check http://localhost:8080 for SPA frontend.
+
+Finally to run the backend app, you'll need to have Python 3, a virtual environment, and dependencies installed.
+
+```bash
+# terminal 3
+# make sure we're using Python 3
+echo '3.x.x' > .python-version
+# create and activate the virtual environment
+python -m venv .venv
+. venv/bin/activate
+# install dependencies
+pip install -r requirements.txt
+# run the app
+(.venv) python application.py
+```
+
+Check http://localhost:5000 to access the app. 
+
+_Note: if you are running the backend in addition to the frontend's `npm run dev`, you should access the http://localhost:8080 for SPA and http://localhost:5000/api/... for API URLs._
 
 
-- config
-- build
-- deploy
-
+[[TODO]] Functions
