@@ -4,8 +4,7 @@ import functools
 from flask import Blueprint, request
 from werkzeug.exceptions import Unauthorized
 from backend.helpers import route, try_parse_int
-from backend.services import slackuser_service, app_service
-from backend.datastores import db
+from backend.services import slackuser_service, app_service, slackchannel_service
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +36,6 @@ def pageable(func):
 @authorized
 @pageable
 def list_users(page, per_page):
-    logger.info(f'List Slack users page={page}, per_page={per_page}')
     filters = {}
     tz_offset_filter = request.args.get('tz_offset')
     if tz_offset_filter:
@@ -45,4 +43,8 @@ def list_users(page, per_page):
     return slackuser_service.query_with_paging(page=page, per_page=per_page, **filters)
 
 
-
+@route(bp, '/slack/channels', methods=['get'])
+@authorized
+@pageable
+def list_channels(page, per_page):
+    return slackchannel_service.query_with_paging(page=page, per_page=per_page)

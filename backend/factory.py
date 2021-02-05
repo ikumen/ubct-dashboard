@@ -42,6 +42,7 @@ def create_app():
     services.user_service.init_app(app)
     services.app_service.init_app(app)
     services.slackuser_service.init_app(app)
+    services.slackchannel_service.init_app(app)
     services.cache.init_app(app)
     register_oauth_providers(app, services.cache)
 

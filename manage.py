@@ -1,7 +1,12 @@
 """
-python manage.py db init (run once to initialize alembic work directory)
-python manage.py db migrate
-python manage.py db upgrade
+A cli wrapper for alembic.
+
+Usage: python manage.py db <option>
+
+where <option> can be:
+    init      initialize the alembic work directory
+    migrate   parse models and create/update schema to reflect model
+    upgrade   apply schema updates
 """
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand

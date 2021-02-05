@@ -48,10 +48,12 @@ class BaseModel(JSONSerializer):
         return query.all()
 
     @classmethod
-    def query_all_with_paging(cls, page, per_page, **kwargs):
+    def query_all_with_paging(cls, page, per_page, sort=None, **kwargs):
         query = cls.query
         if kwargs:
             query = query.filter_by(**kwargs)
+        if sort:
+            query = query.order_by(sort)
         rv = query.paginate(page=page, per_page=per_page)
         return dict(
             page=page,
@@ -75,9 +77,14 @@ class SlackUser(BaseModel, db.Model):
     tz_offset = db.Column(db.String(9))
     archived_at = db.Column(db.DateTime, nullable=False, index=True)
 
-    __mapper_args__ = {
-        "order_by": id
-    }
+
+class SlackChannel(BaseModel, db.Model):
+    __tablename__ = 'sl_channels'
+
+    id = db.Column(db.String(11), primary_key=True)
+    name = db.Column(db.String(80), nullable=False, index=True)
+    description = db.Column(db.Unicode(250))
+    archived_at = db.Column(db.DateTime, nullable=False, index=True)
 
 
 class User(BaseModel, db.Model):

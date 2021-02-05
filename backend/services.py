@@ -1,5 +1,6 @@
 
-from backend.models import Application, User, SlackUser
+from abc import abstractclassmethod
+from backend.models import Application, User, SlackUser, SlackChannel
 from authlib.integrations.flask_client import OAuth
 from flask_caching import Cache
 
@@ -8,6 +9,7 @@ class BaseService:
     """'Service' layer encapsulation of common datastore model operations.
     """
     __model__ = None
+    __default_sort__ = None
 
     def init_app(self, app):
         pass
@@ -16,9 +18,13 @@ class BaseService:
         return kwargs
 
     def query(self, **params):
+        if 'sort' not in params and self.__default_sort__:
+            params['sort'] = self.__default_sort__
         return self.__model__.query_all(**params)
 
     def query_with_paging(self, **params):
+        if 'sort' not in params and self.__default_sort__:
+            params['sort'] = self.__default_sort__
         return self.__model__.query_all_with_paging(**params)
 
     def create(self, **kwargs):
@@ -66,11 +72,26 @@ class ApplicationService(BaseService):
 
 class SlackUserService(BaseService):
     __model__ = SlackUser
+    __default_sort__ = 'name'
+
+    # def query(self, **params):
+    #     return super(SlackUserService, self).query(sort=self.__model__.name, **params)
+
+    # def query_with_paging(self, **params):
+    #     return super(SlackUserService, self).query_with_paging(sort=self.__model__.name, **params)
+
+
+class SlackChannelService(BaseService):
+    __model__ = SlackChannel
+    __default_sort__ = 'name'
 
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
 user_service = UserService()
 app_service = ApplicationService()
+
 slackuser_service = SlackUserService()
+slackchannel_service = SlackChannelService()
+
 oauth_service = OAuth()
 

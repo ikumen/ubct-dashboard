@@ -8,11 +8,13 @@ Data provider for scholars enrolled in [Udacity Bertelsmann Tech Scholarship Clo
   - [API Endpoints](#api-endpoints)
 * [Production](#production)
 * [Development](#development)
+  - [Configuration](#configuration)
+  - [Build and Run](#build-and-run)
 
 
 ## Overview
 
-What does it do? In simple terms: takes data from the Udacity Bertelsmann TS Cloud Track community of scholars and loads it into SQL Database, and provides the data via an API for our community of scholars to consume. The goal is to showcase how various Azure services can be utilized to implement the following architecture.
+What does it do? In simple terms: takes data from the Udacity Bertelsmann TS Cloud Track community of scholars, loads it into a SQL Database, then provides the data via an API for our community of scholars to consume. The goal is to showcase how various Azure services can be utilized to implement the following architecture.
 
 ```                
                        |             Azure Cloud
@@ -52,7 +54,7 @@ The UBTS Cloud Track Data API is a Flask app with two modules, the API server an
 
 ##### SPA User Dashboard
 
-<img src="docs/ubtsct-login.png" width="200"/> <img src="docs/ubtsct-verify.png" width="200"/> <img src="docs/ubtsct-dashboard.png" width="200"/> <img src="docs/ubtsct-dashboard2.png" width="200"/>
+<img src="docs/ubtsct-login.png" width="300"/> <img src="docs/ubtsct-verify.png" width="300"/> <img src="docs/ubtsct-dashboard.png" width="300"/> <img src="docs/ubtsct-dashboard2.png" width="300"/>
 
 
 ## Data API
@@ -95,7 +97,7 @@ Authentication: <your API key>
 
 ### API Endpoints
 
-The API offers the following data sets and their respective endpoints. Requests that return lists of items will be paginated. You can customize how the results are paged back with the following parameters.
+Requests that return lists of items will be paginated. You can customize how the results are paged back with the following parameters.
 
 | Parameter | Type | In | Description |
 | :-- | :-- | :-- | :-- |
@@ -111,6 +113,8 @@ A typical paginated response looks like this, `items` will contain the resource 
   "total": 2000
 }
 ```
+
+The API offers the following data sets and their respective endpoints. 
 
 #### List Slack Users
 
@@ -165,7 +169,7 @@ Slack messages for each channel in the cloud track (throughout day to Event Grid
 
 ## Development
 
-If you would like to contribute, fork or simply demo this project, here's some info to get you started for local development.
+If you would like to contribute, fork or simply demo this project, here's some info to help you run this locally.
 
 You should have the following installed:
 
@@ -213,11 +217,12 @@ The following steps are required for setting up OAuth.
    - `Redirect`: http://localhost:5000/signin/azure/complete
 1. Upon completion, select `go to resource`
 1. from resource page left menu, select `Certificates & secrets`
-   - click `+ New client secret` (take note of client secret and key)
+   - click `+ New client secret` 
+   - take note of client secret and key
 
 ##### GitHub
 
-1. sign in [GitHub](https://github.com) and goto [Developer Settings](https://github.com/settings/apps) page
+1. sign into [GitHub](https://github.com) and go to [Developer Settings](https://github.com/settings/apps) page
 1. from left menu, select `OAuth Apps`
 1. from `OAuth Apps` page, select top right `New OAuth App` button
 1. on the `Register a new OAuth application` page, enter
@@ -232,63 +237,83 @@ After obtaining the client key/id and secrets for `Azure` and `GitHub`, add them
 
 ### Build and Run
 
-There are basically 4 different components to build/run: 
+Before building or running anything, let's install all the required dependencies for both Python and Node modules (our SPA is Svelte).
+
+```bash
+# terminal 1
+cd <project-root>
+echo '3.x.x' > .python-version             # assume you're using pyenv
+python -m venv .venv                       # create virtual env
+. .venv/bin/activate                       # activate the virtual env
+(.venv) pip install -r requirements.txt    # install python dependencies
+
+(.venv) npm install --prefix frontend      # install node dependencies
+```
+
+Great, we're ready to build and run our app. There are basically 4 different components to build/run: 
 
   * containers for Blob storage and SQL Database
   * frontend SPA
   * backend app (includes both API and SPA dashboard)
   * functions
 
-You'll always need to run the local containers for Blob storage and SQL DB.
+Let's bring up the docker containers for our local SQL Database/Blob storage
 ```bash
-# terminal 1
+# terminal 2 (new terminal)
 cd <project-root>
 docker-compose up
 ```
 
+Let's create the schema for our application.
+```bash
+# terminal 1 (back to previous terminal)
+(.venv) python manage.py db migrate
+(.venv) python manage.py db upgrade
+```
+
 The frontend SPA can be built explicitly and run from the backend server or run in a separate development server (via webpack) if you are working on the frontend.
 
-In both cases, you'll need to install the dependencies first.
+If just building the SPA for the backend app, then
+```bash
+# terminal 1 (still)
+(.venv) npm run build --prefix frontend   # compile the SPA
+# ^will create frontend/public/static/bundle.css, frontend/public/static/bundle.js 
+```
+the `bundle.css` and `bundle.js` will get [picked up by the `frontend.py`](/backend/frontend.py#L14).
+
+If you plan on developing the frontend SPA, and want hot-reloading, you'll need to run it in it's own server (via webpack).
 
 ```bash
-# terminal 2
+# terminal 3 (open up new terminal)
 cd <project-root>
-npm install --prefix frontend     # install dependencies
-```
-
-Then if you just need to build it and have it automatically picked up by the backend app.
-
-```bash
-# still terminal 2
-npm run build --prefix frontend   # compile the SPA
-# ^ will create frontend/public/static/bundle.css, frontend/public/static/bundle.js 
-```
-... or if you plan on developing the frontend and want hot-reloading, you'll need to run it in it's own server (via webpack).
-
-```bash
-# still terminal 2
-npm run dev --prefix frontend   # start server at localhost:8080 for the SPA at, calls backend will be proxied to localhost:5000
+npm run dev --prefix frontend     # start server at localhost:8080 for the SPA 
+# ^calls to the backend will be proxied
 ```
 Check http://localhost:8080 for SPA frontend.
 
-Finally to run the backend app, you'll need to have Python 3, a virtual environment, and dependencies installed.
+Finally to run the backend app
 
 ```bash
-# terminal 3
-# make sure we're using Python 3
-echo '3.x.x' > .python-version
-# create and activate the virtual environment
-python -m venv .venv
-. venv/bin/activate
-# install dependencies
-pip install -r requirements.txt
-# run the app
+# terminal 1 (back to original terminal)
 (.venv) python application.py
 ```
 
 Check http://localhost:5000 to access the app. 
 
-_Note: if you are running the backend in addition to the frontend's `npm run dev`, you should access the http://localhost:8080 for SPA and http://localhost:5000/api/... for API URLs._
+_Note: if you are running the frontend SPA (e.g, `npm run dev`) in addition to the backend, you should access the http://localhost:8080 for SPA and http://localhost:5000/api/... for API URLs._
 
 
 [[TODO]] Functions
+
+## Todos
+
+- [ ] missing documentation on
+  - [ ] channels endpoint
+  - [ ] messages endpoint
+  - [ ] production deployment process
+  - [ ] development run Functions locally
+- [ ] detailed how-to on
+  - [ ] OAuth
+  - [ ] SPA, Svelte
+  - [ ] configurations
+
