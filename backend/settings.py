@@ -47,7 +47,7 @@ class Config:
     AZURE_ACCESS_TOKEN_URL = 'https://login.microsoftonline.com/common/oauth2/v2.0/token'
     AZURE_JWKS_URI = 'https://login.microsoftonline.com/common/discovery/v2.0/keys'
 
-    DB_DRIVER = '{ODBC Driver 17 for SQL Server}'
+    DB_DRIVER = os.environ.get('DB_DRIVER', '{ODBC Driver 17 for SQL Server}')
     DB_SERVER_PORT = 1433
     DB_DATABASE = os.environ.get('DB_DATABASE')
     DB_USERNAME = os.environ.get('DB_USERNAME')
