@@ -4,11 +4,11 @@
 </script>
 
 <div class="fl cf flex mt3 mb4 w-100">
-  <div class="flex-auto f4 f4-ns fw3">
+  <div class="flex-auto f4 f3-ns fw3">
     Udacity Bertelsmann <span class="dn dib-l">Cloud Track</span> Data API
   </div>
   {#if showNav}
-  <div class="flex-auto f5 fw2 tr">
+  <div class="flex-auto f5 fw3 tr">
     <ul class="list pa0 mt1">
     {#await $User then user}
       {#if user.authenticated}

@@ -24,10 +24,11 @@
 </style>
 
 <div class="layout">
-  <main class="fl cf w-100 ph1 ph3-m ph6-l fw2">
+  <main class="fl cf w-100 ph1 ph3-m ph6-l fw3 black-80">
+
   {#if secured}
     {#await $User then user}
-      {#if user.isVerified}
+      {#if user.is_verified}
         <slot name="verified"></slot>
       {:else if user.authenticated}
         <slot name="unverified"></slot>

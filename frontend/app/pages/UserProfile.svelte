@@ -8,7 +8,6 @@
   import { User } from '../stores/User';
   import { Errors } from '../stores/Errors';
   
-
   const emptyApp = () => ({name: '', description: ''});
 
   let newApp = emptyApp();
@@ -53,6 +52,20 @@
       .then(UserApps.remove);
   }
 
+  async function deleteAccount(user) {
+    if (prompt(`Please enter "${user.name}" to confirm you want to delete your account.`) === user.name) {
+      fetch('/api/user', {method: 'delete'})
+        .then(resp => {
+          if (resp.status !== 200) {
+            Errors.push('Oh noes, we were unable to complete your request, please try again later.')
+          } else {
+            return resp;
+          }
+        })
+        .then(() => window.location.href = '/signout');
+    }
+  }
+
 </script>
 
 <Layout secured={true}>
@@ -64,7 +77,7 @@
       {user.name}
     {/await}
   </h2>
-  <PageTitle title="Apps" />
+  <PageTitle title="Your apps" />
   
   <form class="fl flex-ns w-100 dib" on:submit|preventDefault={registerApp}>
     <div class="fl cf w-40 w-30-ns">
@@ -92,5 +105,14 @@
       {/each}
     {/await}
   </ul>
+  {#await $User then user}
+  <div class="fl cf w-100 mt4 bt b--black-10">
+    <h2 class="fl cf w-100 pv0 mt2 f4 mb3">Danger zone</h2>
+    <div class="fl cf w-100 mt2 mt0-ns">
+      <button class="f7 ph3 pv2 br1 button-reset bn bg-red hover-bg-light-red white pointer"
+        on:click={() => deleteAccount(user)}>Delete Account</button>
+    </div>   
+  </div>  
+  {/await}
 </div>
 </Layout>

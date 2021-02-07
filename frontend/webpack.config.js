@@ -38,7 +38,6 @@ module.exports = {
 			'/api': 'http://localhost:5000',
 			'/signin': 'http://localhost:5000',
 			'/signout': 'http://localhost:5000',
-			'/_auth': 'http://localhost:5000',
 		}
 	},
 	module: {

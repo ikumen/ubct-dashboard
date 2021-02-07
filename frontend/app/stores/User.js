@@ -20,7 +20,7 @@ export const User = (function(){
   async function load(user) {
     if (!user)
       user = await fetchUser();
-    set({...user, authenticated: true, isVerified: !user.nonce});
+    set({...user, authenticated: 'oa_id' in user});
   }
 
   load();

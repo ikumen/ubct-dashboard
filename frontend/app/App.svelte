@@ -7,9 +7,9 @@
 </script>
 
 <Router>
-  <Route path="/user" component={UserProfile} />
-  <Route path="/verify" component={VerifyUser} />  
   <Route path="/help" component={Help} />
+  <Route path="/user" component={UserProfile} />
+  <Route path="/verify" component={VerifyUser} />        
   <Route path="*" component={Index} />
 </Router>
 

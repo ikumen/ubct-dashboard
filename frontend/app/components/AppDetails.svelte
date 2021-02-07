@@ -12,6 +12,6 @@
         >Delete</button>
     </div>
   </div>
-  <div class="fl w-100 f5 f4-ns fw1">{app.description}</div>
-  <div class="fl w-100 f6 f5-ns fw1 i pt2">{app.token}</div>
+  <div class="fl w-100 f5 f4-ns fw2">{app.description}</div>
+  <div class="fl w-100 f6 f5-ns fw2 i pt2">{app.token}</div>
 </div>

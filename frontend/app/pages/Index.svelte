@@ -26,7 +26,7 @@ import Layout from "../components/Layout.svelte";
 <div class="ph6-l ph4-m mv4">
   <p class="f5 fw2 f4-ns">
     A data provider for scholars enrolled in the <a class="link" href="https://www.udacity.com/bertelsmann-tech-scholarships">Udacity Bertelsmann Tech Scholarship Cloud Track</a> challenge 
-    course&mdash;consume it and build something cool.
+    course, consume it and build something cool.
   </p>
   <ul class="list pa0 mb0 mt5">
   {#await fetchOauthProviders()}

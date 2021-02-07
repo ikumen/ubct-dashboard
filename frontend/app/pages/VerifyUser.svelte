@@ -45,7 +45,7 @@
 </script>
 
 <Layout secured={true}>
-<div class="fl cf w-100 f4" slot="unverified">
+<div class="fl cf w-100" slot="unverified">
   <SiteHeader/>
   <ErrorMessages />
   <PageTitle title="Scholar Verification" />
