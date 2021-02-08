@@ -46,7 +46,7 @@
       <div class="fl w-100">
         Once an identity provider (see above) has authenticated a user, and if the user is new to our system, we need to verify they are
         part of the Udacity Bertelsmann Tech Scholarship Cloud Track course. We assume the user is part of the course if they have access 
-        to the <a href="bertelsmanncloudtrack.slack.com/">bertelsmanncloudtrack.slack.com</a> workspace. To prove the user has access to the
+        to the <a href="//bertelsmanncloudtrack.slack.com/">bertelsmanncloudtrack.slack.com</a> workspace. To prove the user has access to the
         workspace, just create a snippet with a piece of challenge token that we provide. Below are instructions on creating the snippet.
       </div>
       <div class="fl w-100 mt3">

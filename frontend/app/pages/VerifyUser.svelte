@@ -61,7 +61,8 @@
   <div class="fl cf w-100">
     <form on:submit|preventDefault={verifySnippet}>
       <div class="fl w-100 mt4 mb2">
-        1. Simply create a <a class="link" href="https://slack.com/help/articles/204145658-Create-a-snippet">Slack text snippet</a> with this token in the content section
+        1. Simply create a <a class="link" href="https://slack.com/help/articles/204145658-Create-a-snippet">Slack text snippet</a> with this token in the 
+        content section (don't share the snippet to help reduce spam in the channels). For <a href="/help" target="_new" class="link">additional help click here</a>.
       </div>
       <div class="fl w-100 mv2">
         <span class="f4 pv1 ph3 bg-washed-yellow">
