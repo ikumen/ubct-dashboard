@@ -44,12 +44,9 @@
       .then(resp => {
         if (resp.status !== 200) {
           Errors.push(`Oh noes, we were unable to delete app: ${app.name}`)
-        } else {
-          return resp;
         }
       })
-      .then(resp => resp.json())
-      .then(UserApps.remove);
+      .then(() => UserApps.remove(app));
   }
 
   async function deleteAccount(user) {

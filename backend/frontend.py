@@ -3,7 +3,7 @@ import secrets
 
 from flask import Blueprint, render_template, session, redirect, request, jsonify, current_app
 from backend import auth
-from backend.services import app_service
+from backend.services import app_service, user_service
 
 
 logger = logging.getLogger(__name__)
@@ -22,6 +22,7 @@ url_spa_verify = '/verify'
 url_spa_user = '/user'
 
 url_api_user_apps = '/api/user/apps'
+url_api_user = '/api/user'
 
 
 @bp.route(url_api_user_apps, methods=['post'])
@@ -46,8 +47,20 @@ def list_apps(user):
 @bp.route(f'{url_api_user_apps}/<id>', methods=['delete'])
 @auth.authenticated
 def delete_app(id, user):
-    app = app_service.delete_by_user(id, user['id'])
+    app = app_service.soft_delete_by_user(id, user['id'])
     return jsonify(app), 200
+
+
+@bp.route(url_api_user, methods=['delete'])
+@auth.authenticated
+def delete_user(user):
+    user_service.soft_delete(user['id'])
+    return jsonify(user), 200
+
+
+@bp.route('/help')
+def view_help():
+    return render_template(template_spa)
 
 
 @bp.route(url_spa_entry)

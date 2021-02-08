@@ -40,11 +40,11 @@ def list_users(page, per_page):
     tz_offset_filter = request.args.get('tz_offset')
     if tz_offset_filter:
         filters['tz_offset'] = tz_offset_filter
-    return slackuser_service.query_with_paging(page=page, per_page=per_page, **filters)
+    return slackuser_service.find_all_with_paging(page=page, per_page=per_page, **filters)
 
 
 @route(bp, '/slack/channels', methods=['get'])
 @authorized
 @pageable
 def list_channels(page, per_page):
-    return slackchannel_service.query_with_paging(page=page, per_page=per_page)
+    return slackchannel_service.find_all_with_paging(page=page, per_page=per_page)

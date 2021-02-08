@@ -124,6 +124,7 @@ def signin_complete(provider):
         # first time, send them page to verify they are scholar
         oa_user[key_verify_expire_ts] = datetime.now().timestamp() + 1200 #20mins
         oa_user[key_verify_nonce] = str(uuid.uuid4())
+        oa_user[key_is_verified] = False
         session[key_auth_user] = oa_user
         return redirect(frontend.url_spa_verify)
 
@@ -173,7 +174,7 @@ def auth_verify():
 
     verify_resp = requests.request('get', verify_url)
     if verify_resp.status_code != 200 or user[key_verify_nonce] not in verify_resp.text:
-        raise BadRequest(f'Unable to verify token at Slack url: {verify_url}')
+        raise BadRequest(f'Unable to verify token at Slack url: {verify_url}, {verify_resp.reason}')
 
     # User has passed verification, lets clear out the old session
     # and add them to the database, then set them up with new session
@@ -184,7 +185,12 @@ def auth_verify():
         oa_provider=user['oa_provider'],
         name=user['name']
     )
-    session[key_auth_user] = created_user.to_json()
+    
+    session[key_auth_user] = {
+        **created_user.to_json(),
+        key_is_verified: True
+    }
+        
     return session[key_auth_user], 200
 
 

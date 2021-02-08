@@ -9,12 +9,12 @@
   <SiteHeader showNav={true} />
   <PageTitle title="Help" />
 
-  <div class="fl cf w-100 f5 mt4">
-    <div class="fl w-100">
+  <div class="fl cf w-100 f5">
+    <div class="fl w-100 mv3">
       <ul class="fl w-100 list ma0 pa0">
-        <li><a href="#privacy">Privacy</a></li>
-        <li><a href="#slack-verification">Slack Verification</a></li>
-        <li><a href="#api-endpoints">API Endpoints</a></li>
+        <li><a href="#privacy" class="link">Privacy</a></li>
+        <li><a href="#slack-verification" class="link">Slack Verification</a></li>
+        <li><a href="#api-endpoints" class="link">API Endpoints</a></li>
       </ul>
     </div>
   
