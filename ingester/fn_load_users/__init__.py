@@ -12,8 +12,9 @@ def load_users(data):
             (SELECT ?, ?, ?, ?, ?, ?, getdate()
          WHERE NOT EXISTS (SELECT id FROM sl_users WHERE sl_users.id = ?))
     """
+    
     with db.get_conn() as conn:
-        for user in json.loads(''.join(data.readlines())):
+        for user in json.loads(b''.join(data.readlines())):
             #logging.info(f'Inserting user: {user}')
             with conn.cursor() as cursor:
                 cursor.execute(insert_user_stmt, 
@@ -29,6 +30,7 @@ def load_users(data):
 
 def main(event: func.EventGridEvent, data):
     try:
+        logging.info(f'loading data file {data.name}')
         load_users(data)
     except Exception as e:
         logging.error(f'Unable to load users. {e}')

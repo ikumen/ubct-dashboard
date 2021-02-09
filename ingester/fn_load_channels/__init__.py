@@ -13,7 +13,7 @@ def load_channels(data):
            WHERE NOT EXISTS (SELECT id FROM sl_channels WHERE sl_channels.id = ?))
     """
     with db.get_conn() as conn:
-        for channel in json.loads(''.join(data.readlines())):
+        for channel in json.loads(b''.join(data.readlines())):
             #logging.info(f'Inserting channel: {channel}')
             with conn.cursor() as cursor:
                 cursor.execute(insert_user_stmt, 
@@ -26,6 +26,7 @@ def load_channels(data):
 
 def main(event: func.EventGridEvent, data):
     try:
+        logging.info(f'loading data file {data.name}')
         load_channels(data)
     except Exception as e:
         logging.error(f'Unable to load channels. {e}')
