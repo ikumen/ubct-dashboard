@@ -50,7 +50,7 @@ The functional scope of the project covers the components listed under the Azure
 
 #### UBTS Cloud Track Data API
 
-The UBTS Cloud Track Data API is a Flask app with two modules, the API server and a SPA user dashboard for managing applications and API keys.
+The [UBTS Cloud Track Data API](//ubtsapi.azurewebsites.net) is a Flask app with two modules, the API server and a SPA user dashboard for managing applications and API keys.
 
 ##### SPA User Dashboard
 
@@ -132,7 +132,7 @@ List all Slack users, sorted by name.
 
 * [httpie](https://httpie.io/)
   ```bash
-  http <ubtsct-uri>/api/resource/slack/users Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg tz_offset==UTC+03:00 per_page==10
+  http https://ubtsapi.azurewebsites.net/api/resource/slack/users Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg tz_offset==UTC+03:00 per_page==10
   ```
 ##### Example Response
 ```
@@ -147,15 +147,48 @@ Status: 200 OK
   ],
   "page": 1,
   "per_page": 10,
-  "total": 87
+  "total": 2441
 }
 ```
 
 #### Slack Channels
 
-Slack channels belonging to the cloud track (updated daily to Blob storage)
+List all Slack channels, sorted by name. 
 
-[[TODO]]
+```
+[GET] /api/resource/slack/channels
+```
+##### Parameters
+
+| Name | Type | In | Description |
+| :-- | :-- | :-- | :-- |
+| None    |     |     |     |
+
+<br/>
+
+##### Example Request
+
+* [httpie](https://httpie.io/)
+  ```bash
+  http https://ubtsapi.azurewebsites.net/api/resource/slack/users Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg per_page==10
+  ```
+##### Example Response
+```
+Status: 200 OK
+```
+```bash
+{
+ "items":[
+    {"name":"channel_01","id":"CUBTSCT0001","description":"Description for channel 1","members":6},
+    {"name":"channel_02","id":"CUBTSCT0002","description":"Description for channel 2","members":1},
+    {"name":"channel_03","id":"CUBTSCT0003","description":"Description for channel 3","members":6},
+    ...
+  ],
+  "page": 1,
+  "per_page": 10,
+  "total": 94
+}
+```
 
 #### Slack Messages
 
