@@ -67,9 +67,9 @@
 
 <Layout secured={true}>
 <div class="fl cf w-100 f4" slot="verified">
-  <SiteHeader/>
+  <SiteHeader showNav={true}/>
   <ErrorMessages />
-  <h2 class="gray mv2 f3 fw4">
+  <h2 class="gray mv2 f4-l f5 fw5">
     {#await $User then user}
       {user.name}
     {/await}
@@ -104,8 +104,8 @@
   </ul>
   {#await $User then user}
   <div class="fl cf w-100 mt4 bt b--black-10">
-    <h2 class="fl cf w-100 pv0 mt2 f4 mb3">Danger zone</h2>
-    <div class="fl cf w-100 mt2 mt0-ns">
+    <h2 class="fl cf w-100 pv0 mt2 f5 fw4 mb3-l mb2">Danger zone</h2>
+    <div class="fl cf w-100 mt0">
       <button class="f7 ph3 pv2 br1 button-reset bn bg-red hover-bg-light-red white pointer"
         on:click={() => deleteAccount(user)}>Delete Account</button>
     </div>   
