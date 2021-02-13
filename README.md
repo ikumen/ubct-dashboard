@@ -118,7 +118,7 @@ The API offers the following data sets and their respective endpoints.
 
 #### List Slack Users
 
-List all Slack users, sorted by name.
+List all Slack users.
 
 ```
 [GET] /api/resource/slack/users
@@ -127,13 +127,14 @@ List all Slack users, sorted by name.
 | Name | Type | In | Description |
 | :-- | :-- | :-- | :-- |
 | `tz_offset` | string | query | (optional) only show users with given time zone offset from GMT. Format expected: `UTC+03:00` |
+| `sort` | string | query | (optional) field to sort by with sort direction (comman separated e.g, `?sort=name,desc`). Sortable fields include: `id`, `name`, `full_name`, and `tz_offset`.  |
 
 ##### Example Request
 
-* [httpie](https://httpie.io/)
-  ```bash
-  http https://ubtsapi.azurewebsites.net/api/resource/slack/users Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg tz_offset==UTC+03:00 per_page==10
-  ```
+Here's an example with [httpie](https://httpie.io/)
+```bash
+http https://ubtsapi.azurewebsites.net/api/resource/slack/users Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg tz_offset==UTC+03:00 per_page==10
+```
 ##### Example Response
 ```
 Status: 200 OK
@@ -153,7 +154,7 @@ Status: 200 OK
 
 #### Slack Channels
 
-List all Slack channels, sorted by name. 
+List all Slack channels.
 
 ```
 [GET] /api/resource/slack/channels
@@ -162,16 +163,17 @@ List all Slack channels, sorted by name.
 
 | Name | Type | In | Description |
 | :-- | :-- | :-- | :-- |
-| None    |     |     |     |
+| `sort`  | string | query | (optional) field to sort by with sort direction (comman separated e.g, `?sort=name,desc`). Sortable fields include: `id`, `name`.  |
 
 <br/>
 
 ##### Example Request
 
-* [httpie](https://httpie.io/)
-  ```bash
-  http https://ubtsapi.azurewebsites.net/api/resource/slack/users Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg per_page==10
-  ```
+Here's an example with [httpie](https://httpie.io/)
+```bash
+http https://ubtsapi.azurewebsites.net/api/resource/slack/channels Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg per_page==10
+```
+
 ##### Example Response
 ```
 Status: 200 OK
@@ -192,13 +194,227 @@ Status: 200 OK
 
 #### Slack Messages
 
-Slack messages for each channel in the cloud track (throughout day to Event Grid)
+List all Slack messages. 
 
-[[TODO]]
+```
+[GET] /api/resource/slack/messages
+```
+##### Parameters
 
-## Production
+| Name | Type | In | Description |
+| :-- | :-- | :-- | :-- |
+| `thread_id` | string | query | (optional) show messages belonging to thread with this `thread_id`. Format expected: Unix epoc format `1607972627.028300`. |
+| `channel_id` | string | query | (optional) show messages in channel with `channel_id`. Format expected: uppercase 11 alphanumeric characters. See [Slack Channels endpoint](#slack-channels) for list of channels. |
+| `user_id` | string | query | (optional) show messages belonging to given user with `user_id`. Format expected: uppercase 11 alphanumeric characters. See [Slack Users endpoint](#slack-users) for list of users. |
+| `sort`  | string | query | (optional) field to sort by with sort direction (comman separated e.g, `?sort=name,desc`). Sortable fields include: `id`, `channel_id`, `user_id`.  |
 
-[[TODO]]
+<br/>
+
+##### Example Request
+
+Here's an example with [httpie](https://httpie.io/)
+```bash
+http https://ubtsapi.azurewebsites.net/api/resource/slack/messages Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg per_page==10
+```
+
+##### Example Response
+```
+Status: 200 OK
+```
+```bash
+{
+ "items":[
+{
+      "channel_id": "CD1GNFG123V", 
+      "content": "Hi everyone....", 
+      "files": [], 
+      "id": "1607911117.028300", 
+      "reactions": [], 
+      "thread_id": "1222222627.028300", 
+      "user_id": "U0000000000"
+    }, 
+    {
+      "channel_id": "CD1GN5B1J3V", 
+      "content": "Starting with D1 again because was ....", 
+      "files": [], 
+      "id": "1333331979.486600", 
+      "reactions": [
+        {
+          "emoji_id": ":+1:", 
+          "user_id": "U01GGFJDM5X"
+        }, 
+        {
+          "emoji_id": ":spinny_toast:", 
+          "user_id": "U01GTMHMFDW"
+        }, 
+      ], 
+      "thread_id": "1222222627.028300", 
+      "user_id": "U01EEEEE733"
+    }, 
+    ...
+  ],
+  "page": 1,
+  "per_page": 10,
+  "total": 19000
+}
+```
+
+Get a Slack message. 
+
+```
+[GET] /api/resource/slack/messages/<channel_id>/<message_id>
+```
+##### Parameters
+
+| Name | Type | In | Description |
+| :-- | :-- | :-- | :-- |
+| None | | | |
+<br/>
+
+##### Example Request
+
+Here's an example with [httpie](https://httpie.io/)
+
+```bash
+http https://ubtsapi.azurewebsites.net/api/resource/slack/messages/CGH67535RDE5/1600000000.000000  Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg per_page==10
+```
+
+##### Example Response
+```
+Status: 200 OK
+```
+```bash
+{
+ "channel_id": "CGH67535RDE5", 
+  "content": "Starting with D1 again because was stuck on .. ", 
+  "files": [], 
+  "id": "1600000000.000000", 
+  "reactions": [
+    {
+      "emoji_id": ":+1:", 
+      "user_id": "U077777DM5X"
+    }, 
+    {
+      "emoji_id": ":spinny_toast:", 
+      "user_id": "U0AAAAAQGGY"
+    }
+  ], 
+  "thread_id": "1600000000.000000", 
+  "user_id": "U01GG888883"
+}
+```
+
+#### Slack Emojis
+
+List all Slack emojis used in Udacity Bertelsmann Cloud Track workspace.
+
+```
+[GET] /api/resource/slack/emojis
+```
+##### Parameters
+
+| Name | Type | In | Description |
+| :-- | :-- | :-- | :-- |
+| `sort`  | string | query | (optional) field to sort by with sort direction (comman separated e.g, `?sort=id,desc`). Sortable fields include: `id`.  |
+
+<br/>
+
+##### Example Request
+
+Here's an example with [httpie](https://httpie.io/)
+```bash
+http https://ubtsapi.azurewebsites.net/api/resource/slack/emojis Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg per_page==10
+```
+
+##### Example Response
+```
+Status: 200 OK
+```
+```bash
+{
+ "items":[
+    {"id": ":zzz:", "url": "https://a.slack-edge.com/production-standard-emoji-assets/13.0/google-small/1f4a4.png"}, 
+    {"id": ":zany_face:", "url": "https://a.slack-edge.com/production-standard-emoji-assets/13.0/google-small/1f92a.png"}, 
+    {"id": ":yoda:", "url": "https://emoji.slack-edge.com/T01ETQ25VK3/yoda/8b874f813087986e.gif"},    
+    ...
+  ],
+  "page": 1,
+  "per_page": 10,
+  "total": 680
+}
+```
+#### Slack Files
+
+List all Slack files (just links) that were found in messages.
+
+```
+[GET] /api/resource/slack/files
+```
+##### Parameters
+
+| Name | Type | In | Description |
+| :-- | :-- | :-- | :-- |
+| `channel_id` | string | query | (optional) show only files from channel with given `channel_id`. See [Slack Channel endpoint](#slack-channels) for list of channels. |
+| `message_id` | string | query | (optional) show only files from message with given `message_id`. |
+| `sort`  | string | query | (optional) field to sort by with sort direction (comman separated e.g, `?sort=channel_id,desc`). Sortable fields include: `channel_id`, `message_id`.  |
+
+<br/>
+
+##### Example Request
+
+Here's an example with [httpie](https://httpie.io/)
+```bash
+http https://ubtsapi.azurewebsites.net/api/resource/slack/files Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg per_page==10
+```
+
+##### Example Response
+```
+Status: 200 OK
+```
+```bash
+{
+ "items":[
+    {"channel_id": "C1111106AUD", 
+      "message_id": "1611111093.022000", 
+      "url": "https://files.slack.com/files-pri/T01QQQQQVK3-F01JSSSSSQ8/stylish-happy-new-2021-year-template_71609-1506.jpg"}, 
+    {"channel_id": "C0111116AUD", 
+      "message_id": "1611111282.032900", 
+      "url": "https://files.slack.com/files-pri/T0SSSSS5VK3-F01SSSSSJBF/download/screenshot_20210101-103206.png"},
+    ...
+  ],
+  "page": 1,
+  "per_page": 10,
+  "total": 1400
+}
+```
+
+#### API Errors
+
+Should an error occur, one of the following errors and messages will be returned.
+
+| Code | Error | Comment |
+| :-- | :-- | :-- |
+| `500` | `Doh, please try again later!` | Something went wrong on our end, try again later. |
+| `404` | `Sorry, we can't seem to find the requested page.` | Self-explanatory |
+| `401` | `Whoa there buddy, doesn't look like you're authorized.` | Self-explanatory |
+| `400` | `Hmm, I didn't understand your request.` | You're probably missing some input or request parameter, check your request and try again. |
+
+For example a 404.
+```bash
+$ http https://ubtsapi.azurewebsites.net/api/resource/slack/foobar
+
+HTTP/1.0 404 NOT FOUND
+Content-Length: 66
+Content-Type: application/json
+Date: Sat, 13 Feb 2021 06:49:12 GMT
+Server: Werkzeug/1.0.1 Python/3.8.3
+
+{
+    "error": "Sorry, we can't seem to find the requested page."
+}
+```
+
+
 
 ## Development
 
@@ -335,14 +551,19 @@ Check http://localhost:5000 to access the app.
 
 _Note: if you are running the frontend SPA (e.g, `npm run dev`) in addition to the backend, you should access the http://localhost:8080 for SPA and http://localhost:5000/api/... for API URLs._
 
+### Functions
 
-[[TODO]] Functions
+[[TODO]] How do we test/emulate
+
+## Production
+
+[[TODO]] Runbook for prod
 
 ## Todos
 
 - [ ] missing documentation on
-  - [ ] channels endpoint
-  - [ ] messages endpoint
+  - [x] channels endpoint
+  - [x] messages endpoint
   - [ ] production deployment process
   - [ ] development run Functions locally
 - [ ] detailed how-to on

@@ -159,10 +159,16 @@ class SlackMessage(BaseModel, db.Model):
     files = db.relationship('SlackFile', foreign_keys='SlackFile.message_id,SlackFile.channel_id', lazy='subquery')
     reactions = db.relationship('SlackReaction', foreign_keys='SlackReaction.message_id,SlackReaction.channel_id', lazy='subquery')
 
+    @classmethod
+    def get(cls, channel_id, message_id):
+        """Custom get for SlackMessage as it has a composite key"""
+        return cls.query.get((message_id, channel_id))
+
+
 class SlackFile(BaseModel, db.Model):
     __tablename__ = 'sl_files'
     __default_sort__ = 'channel_id'
-    __json_exclude__ = ['message_id', 'channel_id']
+    __json_exclude__ = []
 
     message_id = db.Column(db.ForeignKey('sl_messages.id'), primary_key=True)
     channel_id = db.Column(db.ForeignKey('sl_messages.channel_id'), primary_key=True)

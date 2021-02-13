@@ -1,6 +1,6 @@
 
 from abc import abstractclassmethod
-from backend.models import Application, SlackMessage, User, SlackUser, SlackChannel
+from backend.models import Application, SlackEmoji, SlackFile, SlackMessage, User, SlackUser, SlackChannel
 from authlib.integrations.flask_client import OAuth
 from flask_caching import Cache
 
@@ -59,6 +59,16 @@ class SlackChannelService(BaseService):
 class SlackMessageService(BaseService):
     __model__ = SlackMessage
 
+    def get_by_id(self, channel_id, message_id):
+        return self.__model__.get(channel_id, message_id)
+
+
+class SlackEmojiService(BaseService):
+    __model__ = SlackEmoji
+
+class SlackFileService(BaseService):
+    __model__ = SlackFile
+
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
 
@@ -68,6 +78,8 @@ app_service = ApplicationService()
 slackuser_service = SlackUserService()
 slackchannel_service = SlackChannelService()
 slackmessage_service = SlackMessageService()
+slackemoji_service = SlackEmojiService()
+slackfile_service = SlackFileService()
 
 oauth_service = OAuth()
 
