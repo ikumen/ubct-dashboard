@@ -1,6 +1,6 @@
 
 from abc import abstractclassmethod
-from backend.models import Application, User, SlackUser, SlackChannel
+from backend.models import Application, SlackMessage, User, SlackUser, SlackChannel
 from authlib.integrations.flask_client import OAuth
 from flask_caching import Cache
 
@@ -8,7 +8,6 @@ class BaseService:
     """'Service' layer encapsulation of common datastore model operations.
     """
     __model__ = None
-    __default_sort__ = None
 
     def init_app(self, app):
         pass
@@ -17,10 +16,10 @@ class BaseService:
         return self.__model__.create(**kwargs)
 
     def find_all_with_paging(self, page, per_page, **kwargs):
+        print(f'page={page}, per={per_page}')
         return self.__model__.find_all_with_paging(
             page=page, 
-            per_page=per_page, 
-            sort=self.__default_sort__,
+            per_page=per_page,
             **kwargs)
 
 
@@ -53,20 +52,22 @@ class ApplicationService(BaseService):
 
 class SlackUserService(BaseService):
     __model__ = SlackUser
-    __default_sort__ = 'name'
-
 
 class SlackChannelService(BaseService):
     __model__ = SlackChannel
-    __default_sort__ = 'name'
+
+class SlackMessageService(BaseService):
+    __model__ = SlackMessage
 
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
+
 user_service = UserService()
 app_service = ApplicationService()
 
 slackuser_service = SlackUserService()
 slackchannel_service = SlackChannelService()
+slackmessage_service = SlackMessageService()
 
 oauth_service = OAuth()
 

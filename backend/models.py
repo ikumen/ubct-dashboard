@@ -1,9 +1,13 @@
+from enum import unique
+
+from sqlalchemy.sql.schema import ForeignKeyConstraint
 from backend.datastores import db
 from backend.helpers import JSONSerializer
 
 
 class BaseModel(JSONSerializer):
     __json_exclude__ = []
+    __default_sort__ = None
 
     @classmethod
     def save(cls, model):
@@ -55,29 +59,31 @@ class BaseModel(JSONSerializer):
         return model
 
     @classmethod
-    def _prepare_query(cls, sort=None, **kwargs):
+    def _prepare_query(cls, sort=None, sort_dir=None, **kwargs):
         query = cls.query
         if kwargs:
             query = query.filter_by(**kwargs)
         if sort:
-            query = query.order_by(sort)
+            query = query.order_by(getattr(getattr(cls, sort), sort_dir)())
+        elif cls.__default_sort__:
+            query = query.order_by(cls.__default_sort__)
         return query
 
     @classmethod
-    def find_all(cls, sort=None, **kwargs):
+    def find_all(cls, **kwargs):
         """Find and return list of models specified by the given parameters
         from the underlying datastore.
         """
-        query = cls._prepare_query(sort, **kwargs)
+        query = cls._prepare_query(**kwargs)
         return query.all()
 
     @classmethod
-    def find_all_with_paging(cls, page, per_page, sort=None, **kwargs):
+    def find_all_with_paging(cls, page, per_page, **kwargs):
         """Find and return list of models specified by the given parameters
         from the underlying datastore. Results are paged back and controlled
         via the page and per_page parameters.
         """
-        query = cls._prepare_query(sort, **kwargs)
+        query = cls._prepare_query(**kwargs)
         rv = query.paginate(page=page, per_page=per_page)
         return dict(
             page=page,
@@ -114,6 +120,8 @@ class BaseModel(JSONSerializer):
 
 class SlackUser(BaseModel, db.Model):
     __tablename__ = 'sl_users'
+    __default_sort__ = 'name'
+    __json_exclude__ = ['archived_at']
 
     id = db.Column(db.String(11), primary_key=True)
     name = db.Column(db.Unicode(80), nullable=False, index=True)
@@ -126,11 +134,68 @@ class SlackUser(BaseModel, db.Model):
 
 class SlackChannel(BaseModel, db.Model):
     __tablename__ = 'sl_channels'
+    __default_sort__ = 'name'
+    __json_exclude__ = ['archived_at']
 
     id = db.Column(db.String(11), primary_key=True)
     name = db.Column(db.String(80), nullable=False, index=True)
     description = db.Column(db.Unicode(250))
     archived_at = db.Column(db.DateTime, nullable=False, index=True)
+
+
+class SlackMessage(BaseModel, db.Model):
+    __tablename__ = 'sl_messages'
+    __default_sort__ = 'id'
+    __json_exclude__ = ['deleted']
+
+
+    id = db.Column(db.String(17), primary_key=True)
+    channel_id = db.Column(db.ForeignKey('sl_channels.id'), primary_key=True)
+    thread_id = db.Column(db.String(17), index=True)
+    content = db.Column(db.UnicodeText(None))
+    user_id = db.Column(db.ForeignKey('sl_users.id'), index=True)
+    deleted = db.Column(db.Boolean, index=True)
+
+    files = db.relationship('SlackFile', foreign_keys='SlackFile.message_id,SlackFile.channel_id', lazy='subquery')
+    reactions = db.relationship('SlackReaction', foreign_keys='SlackReaction.message_id,SlackReaction.channel_id', lazy='subquery')
+
+class SlackFile(BaseModel, db.Model):
+    __tablename__ = 'sl_files'
+    __default_sort__ = 'channel_id'
+    __json_exclude__ = ['message_id', 'channel_id']
+
+    message_id = db.Column(db.ForeignKey('sl_messages.id'), primary_key=True)
+    channel_id = db.Column(db.ForeignKey('sl_messages.channel_id'), primary_key=True)
+    url = db.Column(db.String(2048), nullable=False, primary_key=True)
+    
+    __table_args__ = (
+        ForeignKeyConstraint([message_id, channel_id],
+                             [SlackMessage.id, SlackMessage.channel_id]),
+    )
+
+
+class SlackEmoji(BaseModel, db.Model):
+    __tablename__ = 'sl_emojis'
+    __default_sort__ = 'id'
+
+    id = db.Column(db.String(255), primary_key=True)
+    url = db.Column(db.String(2048), nullable=False, index=True)
+
+
+class SlackReaction(BaseModel, db.Model):
+    __tablename__ = 'sl_reactions'
+    __default_sort__ = 'user_id'
+    __json_exclude__ = ['message_id', 'channel_id']
+
+    message_id = db.Column(db.ForeignKey('sl_messages.id'), primary_key=True)
+    channel_id = db.Column(db.ForeignKey('sl_messages.channel_id'), primary_key=True)
+    user_id = db.Column(db.String(11), primary_key=True)
+    emoji_id = db.Column(db.String(255), primary_key=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint([message_id, channel_id],
+                             [SlackMessage.id, SlackMessage.channel_id]),
+    )
 
 
 class User(BaseModel, db.Model):

@@ -17,6 +17,7 @@ def create_config_only_app():
 
     logging.getLogger('azure').setLevel(app.config['AZURE_LOG_LVL'])
     logging.getLogger('urllib3').setLevel(app.config['URLLIB_LOG_LVL'])
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
     
     return app
 
@@ -43,6 +44,7 @@ def create_app():
     services.app_service.init_app(app)
     services.slackuser_service.init_app(app)
     services.slackchannel_service.init_app(app)
+    services.slackmessage_service.init_app(app)
     services.cache.init_app(app)
     register_oauth_providers(app, services.cache)
 

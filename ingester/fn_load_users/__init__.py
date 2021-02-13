@@ -14,7 +14,7 @@ def load_users(data):
     """
     
     with db.get_conn() as conn:
-        for user in json.loads(b''.join(data.readlines())):
+        for user in json.loads(data):
             #logging.info(f'Inserting user: {user}')
             with conn.cursor() as cursor:
                 cursor.execute(insert_user_stmt, 
@@ -31,6 +31,6 @@ def load_users(data):
 def main(event: func.EventGridEvent, data):
     try:
         logging.info(f'loading data file {data.name}')
-        load_users(data)
+        load_users(b''.join(data.readlines()))
     except Exception as e:
         logging.error(f'Unable to load users. {e}')
