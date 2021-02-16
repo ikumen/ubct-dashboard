@@ -24,7 +24,7 @@
 </style>
 
 <div class="layout">
-  <main class="fl cf w-100 ph1 ph3-m ph6-l fw3 black-80">
+  <main class="fl cf w-100 ph1 ph3-m ph6-l fw4 black-80">
 
   {#if secured}
     {#await $User then user}

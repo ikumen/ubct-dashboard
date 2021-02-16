@@ -104,7 +104,7 @@
   </ul>
   {#await $User then user}
   <div class="fl cf w-100 mt4 bt b--black-10">
-    <h2 class="fl cf w-100 pv0 mt2 f5 fw4 mb3-l mb2">Danger zone</h2>
+    <h2 class="fl cf w-100 pv0 mt2 f5 fw5 mb3-l mb2">Danger zone</h2>
     <div class="fl cf w-100 mt0">
       <button class="f7 ph3 pv2 br1 button-reset bn bg-red hover-bg-light-red white pointer"
         on:click={() => deleteAccount(user)}>Delete Account</button>

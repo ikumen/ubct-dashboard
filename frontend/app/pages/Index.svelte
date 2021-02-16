@@ -17,14 +17,14 @@ import Layout from "../components/Layout.svelte";
 <div class="tc">
 <header class="pt4">
   <div class="pt5-ns">
-    <h3 class="f4 f3-ns fw2 mv0">Udacity Bertelsmann Tech Scholarship</h3>
+    <h3 class="f4 f3-ns fw3 mv0">Udacity Bertelsmann Tech Scholarship</h3>
     <h1 class="f1-l f2-m mv0">
       Cloud Track Data API
     </h1>
   </div>
 </header>
 <div class="ph6-l ph4-m mv4">
-  <p class="f5 fw2 f4-ns">
+  <p class="f5 fw3 f4-ns">
     A data provider for scholars enrolled in the <a class="link" href="https://www.udacity.com/bertelsmann-tech-scholarships">Udacity Bertelsmann Tech Scholarship Cloud Track</a> challenge 
     course, consume it and build something cool.
   </p>
@@ -33,7 +33,7 @@ import Layout from "../components/Layout.svelte";
     <li>...loading sign in providers</li>
   {:then providers}
     {#each providers as provider}
-      <li><a class="f7 f6-ns fw2 btn br1 dim ph3 pv2 mb2 dib white bg-black" href="/signin/{provider.id}">Sign in with {provider.label}</a></li>
+      <li><a class="f7 f6-ns fw4 btn br1 dim ph3 pv2 mb2 dib white bg-black" href="/signin/{provider.id}">Sign in with {provider.label}</a></li>
     {/each}
   {:catch error}
     <li class="red">Unable to load Sign in providers</li>

@@ -11,13 +11,13 @@
     Data API
   </div>
   {#if showNav}
-  <div class="flex-auto f6 fw3 tr">
+  <div class="flex-auto f6 tr">
     <ul class="list pa0 mt1">
     {#await $User then user}
+    {#if user.authenticated}
       <li class="dib">
         <a class="link" href="/data">data</a>
       </li>    
-    {#if user.authenticated}
       <li class="dib ml3">
         <a class="link" href="/user">profile</a>
       </li>    
