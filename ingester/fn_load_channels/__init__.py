@@ -22,9 +22,9 @@ def load_channels(datastr):
 
     with db.get_conn() as conn:
         data = json.loads(datastr)
-        for channel in data['inserts']:
+        with conn.cursor() as cursor:
+            for channel in data['inserts']:
             #logging.info(f'Inserting channel: {channel}')
-            with conn.cursor() as cursor:
                 cursor.execute(insert_channel_stmt, 
                     channel['id'],
                     channel['name'],
@@ -32,8 +32,7 @@ def load_channels(datastr):
                     channel['id']
                 )
 
-        for channel in data['updates']:
-            with conn.cursor() as cursor:
+            for channel in data['updates']:
                 cursor.execute(update_channel_stmt,
                     channel['name'],
                     channel['description'],

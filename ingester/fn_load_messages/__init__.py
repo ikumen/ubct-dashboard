@@ -51,29 +51,29 @@ update_msg_stmt = """
      WHERE id = ?
 """
 
-
-def _load_message_relations(msg, cursor):
+def _set_file_data(msg, file_data):
     for furl in msg.get('files', []):
-        logging.info(f"insert file: {msg['id']}, {msg['channel']}, {furl}")
-        cursor.execute(insert_files_stmt,
+        file_data.append((
             msg['id'], 
             msg['channel'], 
             furl, 
             msg['id'], 
             msg['channel'], 
-            furl)
+            furl
+        ))
+    return file_data
 
+def _set_react_data(msg, emoji_data, user_data):
     for emoji_id, emoji in msg.get('reactions', {}).items():
-        logging.info(f"insert emoji: {emoji_id}, {emoji['url']}")
-        cursor.execute(insert_emoji_stmt,
+        emoji_data.append((
             emoji_id, 
             emoji['url'], 
             emoji_id, 
-            emoji['url'])
+            emoji['url']
+        ))
 
         for user in emoji.get('users',[]):
-            logging.info(f"insert reaction: {msg['id']}, {msg['channel']}, {user}, {emoji_id}")
-            cursor.execute(insert_reaction_stmt,
+            user_data.append((
                 msg['id'], 
                 msg['channel'], 
                 user, 
@@ -81,35 +81,77 @@ def _load_message_relations(msg, cursor):
                 msg['id'], 
                 msg['channel'], 
                 user, 
-                emoji_id)
+                emoji_id
+            ))
+    return emoji_data, user_data
 
 
 def load_messages(datastr):
     with db.get_conn() as conn:
         data = json.loads(datastr)
-        for msg in data['inserts']:
-            #logging.info(f'Inserting channel: {channel}')
-            with conn.cursor() as cursor:
+        with conn.cursor() as cursor:
+            cursor.fast_executemany = True
+            msg_data = []
+            file_data = []
+            react_emoji_data = []
+            react_user_data = []
+            i = len(data['inserts'])
+            for msg in data['inserts']:
+                #logging.info(f'Inserting channel: {channel}')
                 logging.info(f"insert msg: {msg['id']}, {msg['channel']}")
-                cursor.execute(insert_msg_stmt, 
+                msg_data.append((
                     msg['id'], 
                     msg['channel'], 
                     msg['thread'], 
                     msg['user'], 
                     msg['content'], 
                     msg['id'], 
-                    msg['channel'])
+                    msg['channel']                    
+                ))
+                _set_file_data(msg, file_data)
+                _set_react_data(msg, react_emoji_data, react_user_data)
 
-                _load_message_relations(msg, cursor)
-
-        for msg in data['updates']: 
-            with conn.cursor() as cursor:
+                if len(msg_data) == 100 or i == 1:                
+                    cursor.executemany(insert_msg_stmt, msg_data)
+                    if file_data:
+                        cursor.executemany(insert_files_stmt, file_data)
+                    if react_emoji_data:
+                        cursor.executemany(insert_emoji_stmt, react_emoji_data)
+                    if react_user_data:
+                        cursor.executemany(insert_reaction_stmt, react_user_data)
+                    msg_data = []
+                    file_data = []
+                    react_emoji_data = []
+                    react_user_data = []
+                i -= 1
+                
+            msg_data = []
+            file_data = []
+            react_emoji_data = []
+            react_user_data = []
+            i = len(data['updates'])
+            for msg in data['updates']: 
                 logging.info(f"update msg: {msg['id']}, {msg['channel']}")
-                cursor.execute(update_msg_stmt, 
+                msg_data.append((
                     msg['content'], 
-                    msg['id'])
+                    msg['id']
+                ))
+                _set_file_data(msg, file_data)
+                _set_react_data(msg, react_emoji_data, react_user_data)
+                if len(msg_data) == 100 or i == 1:          
+                    cursor.executemany(update_msg_stmt, msg_data)
+                    if file_data:
+                        cursor.executemany(insert_files_stmt, file_data)
+                    if react_emoji_data:
+                        cursor.executemany(insert_emoji_stmt, react_emoji_data)
+                    if react_user_data:
+                        cursor.executemany(insert_reaction_stmt, react_user_data)
+                    msg_data = []
+                    file_data = []
+                    react_emoji_data = []
+                    react_user_data = []
+                i -= 1
 
-                _load_message_relations(msg, cursor)
 
 
 def main(event: func.EventGridEvent, data):

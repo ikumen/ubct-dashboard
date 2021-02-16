@@ -13,7 +13,7 @@ def get_conn():
     db_name = os.environ.get('DB_DATABASE')
     db_user = os.environ.get('DB_USERNAME')
     db_password = os.environ.get('DB_PASSWORD')
-    return pyodbc.connect(f'DRIVER={driver};SERVER={server_host};PORT={server_port};DATABASE={db_name};UID={db_user};PWD={db_password}')
+    return pyodbc.connect(f'DRIVER={driver};SERVER={server_host};PORT={server_port};DATABASE={db_name};UID={db_user};PWD={db_password}', autocommit=True)
     
 
 def execute_query(conn, stmt, fetchone=False, *params):

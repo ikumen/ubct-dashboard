@@ -12,7 +12,7 @@ def load_users(datastr):
             (SELECT ?, ?, ?, ?, ?, ?, getdate()
          WHERE NOT EXISTS (SELECT id FROM sl_users WHERE sl_users.id = ?))
     """
-    
+
     update_user_stmt = """
         UPDATE sl_users SET
             name = ?,
@@ -24,27 +24,35 @@ def load_users(datastr):
     
     with db.get_conn() as conn:
         data = json.loads(datastr)
-        for user in data['inserts']:
-            #logging.info(f'Inserting user: {user}')
-            with conn.cursor() as cursor:
-                cursor.execute(insert_user_stmt, 
+        with conn.cursor() as cursor:
+            cursor.fast_executemany = True
+            user_data = []
+            for user in data['inserts']:
+                #logging.info(f'Inserting user: {user}')
+                user_data.append((
                     user['id'],
                     user['name'],
                     user['fullName'],
                     user['title'],
                     user['avatarId'],
                     user['offset'],
-                    user['id'])
+                    user['id']                    
+                ))
+            if user_data:
+                cursor.executemany(insert_user_stmt, user_data)
 
-        for user in data['updates']:
-            with conn.cursor() as cursor:
-                cursor.execute(update_user_stmt,
+            user_data = []
+            for user in data['updates']:
+                user_data.append((
                     user['name'],
                     user['fullName'],
                     user['title'],
                     user['offset'],
-                    user['id'])
-
+                    user['id']                    
+                ))
+            if user_data:
+                cursor.executemany(update_user_stmt, user_data)
+                
 
 def main(event: func.EventGridEvent, data):
     try:
