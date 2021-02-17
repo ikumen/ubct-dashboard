@@ -102,14 +102,14 @@ Requests that return lists of items will be paginated. You can customize how the
 | Parameter | Type | In | Description |
 | :-- | :-- | :-- | :-- |
 | `page` | integer | query | (optional) the page to return, defaults to 1, invalid page will return 404 |
-| `per_page` | integer | query | (optional) the page size, defaults to 100, valid range 10 <= size <= 100 |
+| `per_page` | integer | query | (optional) the page size, defaults to 50, valid range 10 <= size <= 50 |
 
 A typical paginated response looks like this, `items` will contain the resource items being returned.
 ```json
 {
-  "items": [{...}, ],
+  "items": [{}, ],
   "page": 1,
-  "per_page": 100,
+  "per_page": 50,
   "total": 2000
 }
 ```
@@ -268,7 +268,8 @@ Get a Slack message.
 
 | Name | Type | In | Description |
 | :-- | :-- | :-- | :-- |
-| None | | | |
+| channel_id | string | url | (required) filter to specific channel |
+| message_id | string | url | (required) filter to specific message |
 <br/>
 
 ##### Example Request
@@ -276,7 +277,7 @@ Get a Slack message.
 Here's an example with [httpie](https://httpie.io/)
 
 ```bash
-http https://ubtsapi.azurewebsites.net/api/resource/slack/messages/CGH67535RDE5/1600000000.000000  Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg per_page==10
+http https://ubtsapi.azurewebsites.net/api/resource/slack/messages/CGH67535RDE5/1600000000.000000  Authorization:xOZWX3KofjPQ4jjr6MV6sP7BhiEglz2jzmiWg
 ```
 
 ##### Example Response
@@ -345,7 +346,7 @@ Status: 200 OK
 ```
 #### Slack Files
 
-List all Slack files (just links) that were found in messages.
+List all Slack files (just URLs) that were found in messages.
 
 ```
 [GET] /api/resource/slack/files
