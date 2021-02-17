@@ -1,5 +1,5 @@
-from enum import unique
 
+from sqlalchemy import func
 from sqlalchemy.sql.schema import ForeignKeyConstraint
 from backend.datastores import db
 from backend.helpers import JSONSerializer
@@ -8,6 +8,12 @@ from backend.helpers import JSONSerializer
 class BaseModel(JSONSerializer):
     __json_exclude__ = []
     __default_sort__ = None
+
+    @classmethod
+    def count(cls, id=None):
+        if id:
+            return db.session.query(func.count(id)).scalar()
+        return db.session.query(func.count(cls.id)).scalar()
 
     @classmethod
     def save(cls, model):
@@ -174,6 +180,10 @@ class SlackFile(BaseModel, db.Model):
     channel_id = db.Column(db.ForeignKey('sl_messages.channel_id'), primary_key=True)
     url = db.Column(db.String(2048), nullable=False, primary_key=True)
     
+    @classmethod
+    def count(cls):
+        return super().count(id=cls.message_id)
+
     __table_args__ = (
         ForeignKeyConstraint([message_id, channel_id],
                              [SlackMessage.id, SlackMessage.channel_id]),
@@ -198,6 +208,10 @@ class SlackReaction(BaseModel, db.Model):
     user_id = db.Column(db.String(11), primary_key=True)
     emoji_id = db.Column(db.String(255), primary_key=True)
 
+    @classmethod
+    def count(cls):
+        return super().count(id=cls.message_id)
+        
     __table_args__ = (
         ForeignKeyConstraint([message_id, channel_id],
                              [SlackMessage.id, SlackMessage.channel_id]),

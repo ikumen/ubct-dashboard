@@ -47,6 +47,8 @@ def create_app():
     services.slackmessage_service.init_app(app)
     services.slackemoji_service.init_app(app)
     services.slackfile_service.init_app(app)
+    services.slackreaction_service.init_app(app)
+    services.storage_service.init_app(app)
     
     services.cache.init_app(app)
     register_oauth_providers(app, services.cache)

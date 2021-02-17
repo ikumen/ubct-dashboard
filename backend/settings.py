@@ -58,6 +58,11 @@ class Config:
     SQLALCHEMY_DATABASE_URI = f'mssql+pyodbc:///?odbc_connect={urllib.parse.quote_plus(DB_ODBC_URI)}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    BLOB_ACCOUNT_NAME = os.environ.get('BLOB_ACCOUNT_NAME')
+    BLOB_DATASET_CONTAINER_NAME = os.environ.get('BLOB_DATASET_CONTAINER_NAME')
+    BLOB_ACCOUNT_KEY = os.environ.get('BLOB_ACCOUNT_KEY')
+    BLOB_ENDPOINT_HOST = os.environ.get('BLOB_ENDPOINT_HOST', 'core.windows.net')
+
 
     def init_app(self, app, silent=False):
         """Good place for additional/derived configurations.

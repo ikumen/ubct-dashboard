@@ -2,8 +2,11 @@ import logging
 import secrets
 
 from flask import Blueprint, render_template, session, redirect, request, jsonify, current_app
+from werkzeug.exceptions import NotFound
 from backend import auth
-from backend.services import app_service, user_service
+from backend.services import app_service, storage_service, user_service, \
+    slackchannel_service, slackemoji_service, slackuser_service, \
+    slackreaction_service, slackmessage_service, slackfile_service, cache
 
 
 logger = logging.getLogger(__name__)
@@ -58,22 +61,6 @@ def delete_user(user):
     return jsonify(user), 200
 
 
-@bp.route('/help')
-def view_help():
-    return render_template(template_spa)
-
-
-@bp.route(url_spa_entry)
-def view_home():
-    """Return home page.
-    """
-    if auth.key_auth_user in session:
-        if session[auth.key_auth_user].get(auth.key_is_verified):
-            return redirect(url_spa_user)
-        return redirect(url_spa_verify)
-    return render_template(template_spa)
-
-
 @bp.route(url_spa_verify)
 @auth.authenticated_unverified
 def view_verify(user):
@@ -92,4 +79,63 @@ def view_user(user):
     if not user.get(auth.key_is_verified):
         return redirect(url_spa_verify)
     return render_template(template_spa)
+
+
+@bp.route('/user')
+@auth.authenticated
+def view_user_profile():
+    return render_template(template_spa)
+
+
+@bp.route('/data')
+@auth.authenticated
+def view_data():
+    return render_template(template_spa)
+
+
+@cache.cached(timeout=7200) # 2hrs
+def _get_dataset_stats():
+    return dict(counts=dict(
+        channels=slackchannel_service.count(),
+        users=slackuser_service.count(),
+        messages=slackmessage_service.count(),
+        files=slackfile_service.count(),
+        emojis=slackemoji_service.count(),
+        reactions=slackreaction_service.count()
+    ))
+
+
+@bp.route('/api/datasets')
+@auth.authenticated
+def view_datasets(user):
+    return dict(
+        stats=_get_dataset_stats(),
+        datasets=storage_service.list_dataset_container_files()
+    ), 200
+
+
+@bp.route('/dataset')
+@auth.authenticated
+def view_dataset_file(user):
+    f = request.args.get('f')
+    if not f or f not in [d['name'] for d in storage_service.list_dataset_container_files()]:
+        raise NotFound
+    return redirect(storage_service.get_url_for_dataset_file(f))
+
+
+@bp.route('/help')
+def view_help():
+    return render_template(template_spa)
+
+
+@bp.route(url_spa_entry)
+def view_home():
+    """Return home page.
+    """
+    if auth.key_auth_user in session:
+        if session[auth.key_auth_user].get(auth.key_is_verified):
+            return redirect(url_spa_user)
+        return redirect(url_spa_verify)
+    return render_template(template_spa)
+
 
