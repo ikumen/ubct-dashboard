@@ -83,13 +83,13 @@ def view_user(user):
 
 @bp.route('/user')
 @auth.authenticated
-def view_user_profile():
+def view_user_profile(user):
     return render_template(template_spa)
 
 
 @bp.route('/data')
 @auth.authenticated
-def view_data():
+def view_data(user):
     return render_template(template_spa)
 
 
