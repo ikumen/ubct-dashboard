@@ -5,8 +5,8 @@ name: Build and deploy Python app to Azure Web App - ubtsapi
 
 on:
   push:
-    paths:
-      - '!ingester/**'
+    tags:
+      - release-*
     branches:
       - main
   workflow_dispatch:
