@@ -21,7 +21,7 @@ class StorageService:
         blob_service = BlobServiceClient.from_connection_string(conn_str=conn_str)
         self.container_client = blob_service.get_container_client(container=self.dataset_container_name)
 
-    @cache.cached(timeout=7200)
+    @cache.cached(timeout=7200, key_prefix='dataset_files')
     def list_dataset_container_files(self):
         datafiles = []
         for blob in self.container_client.list_blobs():

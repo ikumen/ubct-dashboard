@@ -93,7 +93,7 @@ def view_data(user):
     return render_template(template_spa)
 
 
-@cache.cached(timeout=7200) # 2hrs
+@cache.cached(timeout=7200, key_prefix='dataset_stats') # 2hrs
 def _get_dataset_stats():
     return dict(counts=dict(
         channels=slackchannel_service.count(),
