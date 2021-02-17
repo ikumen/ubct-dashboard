@@ -6,7 +6,7 @@
 
 <Layout showSignin={true}>
 <div class="fl cf w-100 f4">
-  <SiteHeader showNav={true} />
+  <SiteHeader showNav={true} isVerifiedOnly={true} />
   <PageTitle title="Help" />
 
   <div class="fl cf w-100 f5">

@@ -1,6 +1,7 @@
 <script>
   import { User } from '../stores/User';
   export let showNav = false;
+  export let isVerifiedOnly = false;
 </script>
 
 <div class="fl cf flex mt3 mb4 w-100">
@@ -14,7 +15,7 @@
   <div class="flex-auto f6 tr">
     <ul class="list pa0 mt1">
     {#await $User then user}
-    {#if user.authenticated}
+    {#if user.authenticated && (!isVerifiedOnly || user.is_verified)}
       <li class="dib">
         <a class="link" href="/data">data</a>
       </li>    

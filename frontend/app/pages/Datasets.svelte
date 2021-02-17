@@ -12,7 +12,7 @@
 
 <Layout secured={true}>
   <div class="fl cf w-100 f4" slot="verified">
-    <SiteHeader showNav={true}/>
+    <SiteHeader showNav={true} isVerifiedOnly={true} />
     <ErrorMessages />
     <PageTitle title="Dataset" />
     
