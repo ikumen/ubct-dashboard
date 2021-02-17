@@ -6,9 +6,7 @@ name: Build and deploy Python app to Azure Web App - ubtsapi
 on:
   push:
     tags:
-      - release-*
-    branches:
-      - main
+      - release-api-*
   workflow_dispatch:
 
 jobs:
