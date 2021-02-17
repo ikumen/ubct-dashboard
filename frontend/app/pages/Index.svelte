@@ -17,14 +17,14 @@ import Layout from "../components/Layout.svelte";
 <div class="tc">
 <header class="pt4">
   <div class="pt5-ns">
-    <h3 class="f4 f3-ns fw3 mv0">Udacity Bertelsmann Tech Scholarship</h3>
+    <h3 class="f4 f3-ns fw4 mv0">Udacity Bertelsmann Tech Scholarship</h3>
     <h1 class="f1-l f2-m mv0">
       Cloud Track Data API
     </h1>
   </div>
 </header>
-<div class="ph6-l ph4-m mv4">
-  <p class="f5 fw3 f4-ns">
+<div class="ph6-l ph3-m mv4">
+  <p class="f5 fw4 f4-ns black-60">
     A data provider for scholars enrolled in the <a class="link" href="https://www.udacity.com/bertelsmann-tech-scholarships">Udacity Bertelsmann Tech Scholarship Cloud Track</a> challenge 
     course, consume it and build something cool.
   </p>

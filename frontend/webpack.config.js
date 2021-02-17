@@ -38,6 +38,7 @@ module.exports = {
 			'/api': 'http://localhost:5000',
 			'/signin': 'http://localhost:5000',
 			'/signout': 'http://localhost:5000',
+			'/dataset': 'http://localhost:5000',
 		}
 	},
 	module: {

@@ -4,7 +4,7 @@
 </script>
 
 <div class="fl cf flex mt3 mb4 w-100">
-  <div class="flex-auto f4 f3-l fw3">
+  <div class="flex-auto f4 f3-l fw4">
     <span class="dn-m dn-l dib">UB</span>
     <span class="dn dib-m">Udacity Bertelsmann</span> 
     <span class="dn dib-l">Udacity Bertelsmann Cloud Track</span> 
