@@ -54,7 +54,7 @@ The [UBTS Cloud Track Data API](//ubtsapi.azurewebsites.net) is a Flask app with
 
 ##### SPA User Dashboard
 
-<img src="docs/ubtsct-login.png" width="300"/> <img src="docs/ubtsct-verify.png" width="300"/> <img src="docs/ubtsct-dashboard.png" width="300"/> <img src="docs/ubtsct-dashboard2.png" width="300"/>
+<img src="docs/ubtsct-login.png" width="300"/> <img src="docs/ubtsct-verify.png" width="300"/> <img src="docs/ubtsct-dashboard2.png" width="300"/> <img src="docs/ubtsct-data.png" width="300"/>
 
 
 ## Data API
