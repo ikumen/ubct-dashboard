@@ -17,25 +17,25 @@ Data provider for scholars enrolled in [Udacity Bertelsmann Tech Scholarship Clo
 What does it do? In simple terms: takes data from the Udacity Bertelsmann TS Cloud Track community of scholars, loads it into a SQL Database, then provides the data via an API for our community of scholars to consume. The goal is to showcase how various Azure services can be utilized to implement the following architecture.
 
 ```                
-                       |             Azure Cloud
-                       |      +----------------+
-                       | +--->|  Blob Storage  |<--------------+
-+----------------+     | |    +-------|--------+               |
-|   User Data    |     | |    +-------v--------+      +--------V--------+
-|  from various  |-----^-+--->|  Azure Event   |----->| Azure Functions |  
-|    sources     |     |      |     Grid       |      +--------+--------+
-+----------------+     |      +----------------+               |     
-                       |                                       |
-                       |      +----------------+     +---------v----------+
-+------------+         |      | UBTS Data API  |     | Azure SQL Database |
-| +----------+-+       |      | (App Service)  |     +---------+----------+
-| |  Awesome   |       |      |                |<--------------+
-| |   Apps     |<------^------| /students      |
-+-|            |       |      | /messages      |     +--------------------+
-  +------------+       |      +--------+-------+     | Microsoft Identity |
-        ^--------------^---------------^-------------|      Platform      |
-                       |                             +--------------------+
-                       |
+                       │             Azure Cloud
+                       │      ┌────────────────┐
+                       │ ┌───>│  Blob Storage  │<──────────────┐
+┌────────────────┐     │ │    └────────────────┘               |
+│   User Data    │     │ │    ┌────────────────┐      ┌────────┴────────┐
+│  from various  │─────^─┴───>│  Azure Event   │─────>│ Azure Functions │  
+│    sources     │     │      │     Grid       │      └────────┬────────┘
+└────────────────┘     │      └────────────────┘               │     
+                       │                                       │
+                       │      ┌────────────────┐     ┌─────────┴──────────┐
+┌────────────┐         │      │ UBTS Data API  │     │ Azure SQL Database │
+│ ┌────────────┐       │      │ (App Service)  │     └─────────┬──────────┘
+│ │  Awesome   │       │      │                │<──────────────┘
+│ │   Apps     │<──────^──────│ /students      │
+└─│            │       │      │ /messages      │     ┌────────────────────┐
+  └─────┬──────┘       │      └────────┬───────┘     │ Microsoft Identity │
+        ^──────────────^───────────────^─────────────│      Platform      │
+                       │                             └────────────────────┘
+                       │
 ```
 
 ### Core Components
